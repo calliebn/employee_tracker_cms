@@ -1,0 +1,24 @@
+{
+  "name": "employee_tracker_cms",
+  "version": "1.0.0",
+  "description": "An employee management CMS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calliebn/employee_tracker_cms.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/calliebn/employee_tracker_cms/issues"
+  },
+  "homepage": "https://github.com/calliebn/employee_tracker_cms#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.0.0",
+    "mysql": "^2.18.1"
+  }
+}
