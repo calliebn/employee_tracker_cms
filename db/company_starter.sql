@@ -28,3 +28,11 @@ PRIMARY KEY(id),
 FOREIGN KEY (role_id) REFERENCES role (id) ON DELETE CASCADE,
 FOREIGN KEY (manager_id) REFERENCES role (id) ON DELETE CASCADE
 );
+
+INSERT INTO department (name) VALUES
+('Sales'),
+('Finance'),
+('IT'),
+('Production'),
+('Legal'),
+('Engineering')

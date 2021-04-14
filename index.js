@@ -13,7 +13,7 @@ const connection = require('./config/connection')
 // Inquirer prompts
 // Choose your own adventure
 const start = () => {
-    inquirer.prompt ({
+    inquirer.prompt({
         name: 'action',
         type: 'list',
         message: 'What would you like to do?',
@@ -28,12 +28,52 @@ const start = () => {
             'Exit'
         ]
 
-    }).then //switch case statement
+    }).then switch (value) {
+        case 'Add a department':
+            newDepartment = addDeptInfo();
+            break;
+
+        case 'Add a role':
+            newRole = addRoleInfo();
+            break;
+
+        case 'Add an employee':
+            newEmployee = addEmployeeInfo();
+            break;
+
+        case 'View all departments':
+            connection.query('SELECT * FROM department', (err, results) => {
+                console.log(results)
+            });
+            break;
+
+        case 'View all roles':
+            connection.query('SELECT * FROM role', (err, results) => {
+                console.log(results)
+            });
+            break;
+
+        case 'View all employees':
+            connection.query('Select * FROM employee', (err, results) => {
+                console.log(results)
+            });
+            break;
+
+        case 'Update and employee\'s role':
+            updateRole = updateEmployeeInfo();
+            connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
+                console.log(results)
+            });
+            break;
+
+        case 'Exit':
+            break;
+    }
 }
 
 // Add a department question
 const addDeptInfo = () => {
-    return inquirer.prompt ({
+    return inquirer.prompt({
         name: 'deptName',
         type: 'input',
         message: 'What is the name of the new department?'
@@ -42,33 +82,33 @@ const addDeptInfo = () => {
 
 // Add a role
 const addRoleInfo = () => {
-    inquirer.prompt ([
+    inquirer.prompt([
         {
-        name: 'roleName',
-        type: 'input',
-        message: 'What is the title of the new role?'
-    },
+            name: 'roleName',
+            type: 'input',
+            message: 'What is the title of the new role?'
+        },
 
-    {
-        name: 'salary',
-        type: 'input',
-        message: 'What is the salary for the new role?'
-    },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'What is the salary for the new role?'
+        },
 
-    {
-        name: 'deptName',
-        type: 'list',
-        message: 'Which department does this role report to?',
-        choices: [
-            ...department
-        ]
-    }
+        {
+            name: 'deptName',
+            type: 'list',
+            message: 'Which department does this role report to?',
+            choices: [
+                ...department
+            ]
+        }
     ])
 }
 
 // Add an employee
 const addEmployeeInfo = () => {
-    inquirer.prompt ([
+    inquirer.prompt([
         {
             name: 'firstName',
             type: 'input',
@@ -101,3 +141,27 @@ const addEmployeeInfo = () => {
     ])
 }
 
+// Update an employee's role
+const updateEmployeeInfo = () => {
+    inquirer.prompt ([
+        {
+            name: 'updatename',
+            type: 'list',
+            message: 'Which employee\'s role would you like to update?',
+            choices: [
+                ...employee
+            ]
+        },
+
+        {
+            name: 'updaterole',
+            type: 'input',
+            message: 'What is their new role?'
+        }
+    ])
+}
+
+connection.connect(err => {
+    if (err) throw err;
+    start();
+})
