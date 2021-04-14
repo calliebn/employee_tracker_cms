@@ -12,6 +12,7 @@ const connection = mysql.createConnection({
 });
 
 // Inquirer prompts
+// Choose your own adventure
 const start = () => {
     inquirer.prompt ({
         name: 'action',
@@ -28,12 +29,12 @@ const start = () => {
             'Exit'
         ]
 
-    })
+    }).then //switch case statement
 }
 
 // Add a department question
 const addDeptInfo = () => {
-    inquirer.prompt ({
+    return inquirer.prompt ({
         name: 'deptName',
         type: 'input',
         message: 'What is the name of the new department?'
@@ -58,7 +59,10 @@ const addRoleInfo = () => {
     {
         name: 'deptName',
         type: 'list',
-        choices: []
+        message: 'Which department does this role report to?',
+        choices: [
+            ...department
+        ]
     }
     ])
 }
@@ -83,7 +87,7 @@ const addEmployeeInfo = () => {
             type: 'list',
             message: 'What is the employee\'s role?',
             choices: [
-                ...roles
+                ...role
             ]
         },
 
