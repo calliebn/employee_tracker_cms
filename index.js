@@ -2,14 +2,13 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql')
 const conTable = require('console.table');
+const connection = require('./config/connection')
 
 // Connection to Database
-const connection = mysql.createConnection({
-    host: 'localhost',
-    port: 3306,
-    password: '',
-    database: 'cms_db',
-});
+// const connection = mysql.createConnection({
+//     host: 'localhost',
+//     port: 3306
+// });
 
 // Inquirer prompts
 // Choose your own adventure
