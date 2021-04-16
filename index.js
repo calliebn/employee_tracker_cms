@@ -1,18 +1,18 @@
 // required dependencies
 const inquirer = require('inquirer');
-const mysql = require('mysql')
 const conTable = require('console.table');
-const connection = require('./config/connection')
+const connection = require('./config/connection');
 
-// Connection to Database
-// const connection = mysql.createConnection({
-//     host: 'localhost',
-//     port: 3306
-// });
+
+// Table variables
+// const department = console.table(results);
+// const role = console.table(results);
+// const employee = console.table(results);
 
 // Inquirer prompts
 // Choose your own adventure
 const start = () => {
+    console.log('Welcome to the employee cms')
     inquirer.prompt({
         name: 'action',
         type: 'list',
@@ -28,47 +28,50 @@ const start = () => {
             'Exit'
         ]
 
-    }).then switch (value) {
-        case 'Add a department':
-            newDepartment = addDeptInfo();
-            break;
+    }).then(response => {
+        switch (response.action) {
+            case 'Add a department':
+                newDepartment = addDeptInfo();
+                break;
 
-        case 'Add a role':
-            newRole = addRoleInfo();
-            break;
+            case 'Add a role':
+                newRole = addRoleInfo();
+                break;
 
-        case 'Add an employee':
-            newEmployee = addEmployeeInfo();
-            break;
+            case 'Add an employee':
+                newEmployee = addEmployeeInfo();
+                break;
 
-        case 'View all departments':
-            connection.query('SELECT * FROM department', (err, results) => {
-                console.log(results)
-            });
-            break;
+            case 'View all departments':
+                connection.query('SELECT * FROM department', (err, results) => {
+                    console.table(results)
+                });
+                break;
 
-        case 'View all roles':
-            connection.query('SELECT * FROM role', (err, results) => {
-                console.log(results)
-            });
-            break;
+            case 'View all roles':
+                connection.query('SELECT * FROM role', (err, results) => {
+                    console.table(results)
+                });
+                break;
 
-        case 'View all employees':
-            connection.query('Select * FROM employee', (err, results) => {
-                console.log(results)
-            });
-            break;
+            case 'View all employees':
+                connection.query('Select * FROM employee', (err, results) => {
+                    console.table(results)
+                });
+                break;
 
-        case 'Update and employee\'s role':
-            updateRole = updateEmployeeInfo();
-            connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
-                console.log(results)
-            });
-            break;
+            case 'Update and employee\'s role':
+                updateRole = updateEmployeeInfo();
+                connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
+                    console.table(results)
+                });
+                break;
 
-        case 'Exit':
-            break;
-    }
+            case 'Exit':
+                connection.end();
+                break;
+        }
+    })
 }
 
 // Add a department question
@@ -82,7 +85,7 @@ const addDeptInfo = () => {
 
 // Add a role
 const addRoleInfo = () => {
-    inquirer.prompt([
+    return inquirer.prompt([
         {
             name: 'roleName',
             type: 'input',
@@ -108,7 +111,7 @@ const addRoleInfo = () => {
 
 // Add an employee
 const addEmployeeInfo = () => {
-    inquirer.prompt([
+   return inquirer.prompt([
         {
             name: 'firstName',
             type: 'input',
@@ -143,7 +146,7 @@ const addEmployeeInfo = () => {
 
 // Update an employee's role
 const updateEmployeeInfo = () => {
-    inquirer.prompt ([
+    return inquirer.prompt([
         {
             name: 'updatename',
             type: 'list',
