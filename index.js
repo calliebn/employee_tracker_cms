@@ -31,39 +31,43 @@ const start = () => {
     }).then(response => {
         switch (response.action) {
             case 'Add a department':
-                newDepartment = addDeptInfo();
+                addDeptInfo()
                 break;
 
             case 'Add a role':
-                newRole = addRoleInfo();
+                addRoleInfo();
                 break;
 
             case 'Add an employee':
-                newEmployee = addEmployeeInfo();
+                addEmployeeInfo();
                 break;
 
             case 'View all departments':
                 connection.query('SELECT * FROM department', (err, results) => {
                     console.table(results)
+                    start();
                 });
                 break;
 
             case 'View all roles':
                 connection.query('SELECT * FROM role', (err, results) => {
                     console.table(results)
+                    start();
                 });
                 break;
 
             case 'View all employees':
                 connection.query('Select * FROM employee', (err, results) => {
                     console.table(results)
+                    start();
                 });
                 break;
 
             case 'Update and employee\'s role':
-                updateRole = updateEmployeeInfo();
+                updateEmployeeInfo();
                 connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
                     console.table(results)
+                    start();
                 });
                 break;
 
@@ -76,16 +80,21 @@ const start = () => {
 
 // Add a department question
 const addDeptInfo = () => {
-    return inquirer.prompt({
+    inquirer.prompt({
         name: 'deptName',
         type: 'input',
         message: 'What is the name of the new department?'
+    }).then (answers => {
+        connection.query('INSERT INTO department SET ?', {name: answers.deptName}, (err, results) => {
+            console.log('Department has been added')
+            start();
+        })
     })
 }
 
 // Add a role
 const addRoleInfo = () => {
-    return inquirer.prompt([
+    inquirer.prompt([
         {
             name: 'roleName',
             type: 'input',
@@ -106,12 +115,17 @@ const addRoleInfo = () => {
                 ...department
             ]
         }
-    ])
+    ]).then(answers => {
+        connection.query('INSERT INTO role SET ?', {name: answers.roleName, name:answers.salary, name: answers.deptName}, (err, results) => {
+            console.log('Role has been added')
+            start();
+        })
+    })
 }
 
 // Add an employee
 const addEmployeeInfo = () => {
-   return inquirer.prompt([
+   inquirer.prompt([
         {
             name: 'firstName',
             type: 'input',
@@ -141,12 +155,17 @@ const addEmployeeInfo = () => {
                 ...managers
             ]
         }
-    ])
+    ]).then(answers => {
+        connection.query('INSERT INTO employee SET ?', {name: answers.firstName, name: answers.lastName, name: answers.role, name: answers.manager}, (err, results) => {
+            console.log('Employee has been added')
+            start()
+        })
+    })
 }
 
 // Update an employee's role
 const updateEmployeeInfo = () => {
-    return inquirer.prompt([
+    inquirer.prompt([
         {
             name: 'updatename',
             type: 'list',
