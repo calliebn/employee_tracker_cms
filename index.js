@@ -19,6 +19,7 @@ const start = () => {
             'View all roles',
             'View all employees',
             'Update an employee\'s role',
+            'Delete a department',
             'Delete a role',
             'Delete an employee',
             'Exit'
@@ -62,6 +63,10 @@ const start = () => {
             case 'Update an employee\'s role':
                 console.log("update")
                 updateEmployeeInfo();
+                break;
+
+            case 'Delete a department':
+                deleteDept();
                 break;
 
             case 'Delete a role':
@@ -212,7 +217,28 @@ const updateEmployeeInfo = () => {
 
 }
 
-//Delete a role
+// Delete a department
+const deleteDept = () => {
+    connection.query('SELECT * FROM department', (err, deptResults) => {
+        const deptChoices = deptResults.map(({ id, name }) => ({ name: name, value: id }));
+        console.log(deptChoices)
+        inquirer.prompt(
+            {
+                name: 'deletedDept',
+                type: 'list',
+                message: 'Which department would you like to delete?',
+                choices: deptChoices
+            }
+        ).then(answers => {
+            connection.query('DELETE FROM department WHERE id =?', answers.deletedDept, (err, deletedDept) => {
+                console.log('Successfully removed department')
+                start();
+            })
+        })
+    })
+}
+
+// Delete a role
 const deleteRole = () => {
     connection.query('SELECT * FROM role', (err, roleResults) => {
         const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
