@@ -19,6 +19,7 @@ const start = () => {
             'View all roles',
             'View all employees',
             'Update an employee\'s role',
+            'Delete a role',
             'Delete an employee',
             'Exit'
         ]
@@ -63,9 +64,13 @@ const start = () => {
                 updateEmployeeInfo();
                 break;
 
+            case 'Delete a role':
+                deleteRole();
+                break;
+
             case 'Delete an employee':
-                    deleteEmployee();
-                    break;
+                deleteEmployee();
+                break;
 
             case 'Exit':
                 connection.end();
@@ -165,8 +170,8 @@ const addEmployeeInfo = () => {
                     start()
                 })
             })
-        }) // closing for employee 
-    }); //role 
+        })
+    });
 }
 
 // Update an employee's role
@@ -197,14 +202,35 @@ const updateEmployeeInfo = () => {
                 ).then(updatedRole => {
                     console.log('new role for selected employee', updatedRole.newrole)
                     connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole.newrole, answers.updatename], (err, results) => {
-                    console.table(results)
-                    start();
+                        console.table(results)
+                        start();
                     });
                 });
             });
         })
     })
 
+}
+
+//Delete a role
+const deleteRole = () => {
+    connection.query('SELECT * FROM role', (err, roleResults) => {
+        const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
+        console.log(roleChoices)
+        inquirer.prompt(
+            {
+                name: 'deletedRole',
+                type: 'list',
+                message: 'Which role would you like to delete?',
+                choices: roleChoices
+            }
+        ).then(answers => {
+            connection.query('DELETE FROM role WHERE id =?', answers.deletedRole, (err, deletedRole) => {
+                console.log('Successfully removed role')
+                start();
+            })
+        })
+    })
 }
 
 // Delete an employee
