@@ -28,9 +28,9 @@ The project is licensed under the MIT license.
 ## Tests
 Please run the following command to test:
 
-
 ## Links
-
+Link to Video: https://drive.google.com/file/d/1JTkqVxd_NtoicqzuvZ45mMCPkMh7iT28/view
+Link to GitHub Repo: https://github.com/calliebn/employee_tracker_cms
 
 ## Contributors
 callie
