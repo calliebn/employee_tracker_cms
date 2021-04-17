@@ -19,6 +19,7 @@ const start = () => {
             'View all roles',
             'View all employees',
             'Update an employee\'s role',
+            'Delete an employee',
             'Exit'
         ]
 
@@ -61,6 +62,10 @@ const start = () => {
                 console.log("update")
                 updateEmployeeInfo();
                 break;
+
+            case 'Delete an employee':
+                    deleteEmployee();
+                    break;
 
             case 'Exit':
                 connection.end();
@@ -166,11 +171,9 @@ const addEmployeeInfo = () => {
 
 // Update an employee's role
 const updateEmployeeInfo = () => {
-    console.log("Hello Update");
     connection.query('SELECT * FROM employee', (err, employeeResults) => {
         const employeeChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
         console.log(employeeChoices)
-        console.log("Ask me a question")
         inquirer.prompt(
             {
                 name: 'updatename',
@@ -198,10 +201,31 @@ const updateEmployeeInfo = () => {
                     start();
                     });
                 });
-            });// closing role connection 
-        })//closing prompt 
-    })//employee connection 
+            });
+        })
+    })
 
+}
+
+// Delete an employee
+const deleteEmployee = () => {
+    connection.query('SELECT * FROM employee', (err, employeeResults) => {
+        const employeeChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+        console.log(employeeChoices)
+        inquirer.prompt(
+            {
+                name: 'deletedEmployee',
+                type: 'list',
+                message: 'Which employee would you like to delete?',
+                choices: employeeChoices
+            }
+        ).then(answers => {
+            connection.query('DELETE FROM employee WHERE id = ?', answers.deletedEmployee, (err, deletedEmployee) => {
+                console.log('Successfully removed employee')
+                start();
+            });
+        });
+    });
 }
 
 connection.connect(err => {
