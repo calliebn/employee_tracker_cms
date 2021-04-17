@@ -3,12 +3,6 @@ const inquirer = require('inquirer');
 const conTable = require('console.table');
 const connection = require('./config/connection');
 
-
-// Table variables
-// const department = console.table(results);
-// const role = console.table(results);
-// const employee = console.table(results);
-
 // Inquirer prompts
 // Choose your own adventure
 const start = () => {
@@ -63,16 +57,16 @@ const start = () => {
                 });
                 break;
 
-            case 'Update and employee\'s role':
+            case 'Update an employee\'s role':
+                console.log("update")
                 updateEmployeeInfo();
-                connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
-                    console.table(results)
-                    start();
-                });
+
+                start();
                 break;
 
             case 'Exit':
                 connection.end();
+                process.exit();
                 break;
         }
     })
@@ -84,8 +78,8 @@ const addDeptInfo = () => {
         name: 'deptName',
         type: 'input',
         message: 'What is the name of the new department?'
-    }).then (answers => {
-        connection.query('INSERT INTO department SET ?', {name: answers.deptName}, (err, results) => {
+    }).then(answers => {
+        connection.query('INSERT INTO department SET ?', { name: answers.deptName }, (err, results) => {
             console.log('Department has been added')
             start();
         })
@@ -94,93 +88,123 @@ const addDeptInfo = () => {
 
 // Add a role
 const addRoleInfo = () => {
-    inquirer.prompt([
-        {
-            name: 'roleName',
-            type: 'input',
-            message: 'What is the title of the new role?'
-        },
+    connection.query('SELECT * FROM department', (err, deptResults) => {
+        const departmentChoices = deptResults.map(({ id, name }) => ({ name: name, value: id }));
+        console.log(departmentChoices)
+        inquirer.prompt([
+            {
+                name: 'roleName',
+                type: 'input',
+                message: 'What is the title of the new role?'
+            },
 
-        {
-            name: 'salary',
-            type: 'input',
-            message: 'What is the salary for the new role?'
-        },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'What is the salary for the new role?'
+            },
 
-        {
-            name: 'deptName',
-            type: 'list',
-            message: 'Which department does this role report to?',
-            choices: [
-                ...department
-            ]
-        }
-    ]).then(answers => {
-        connection.query('INSERT INTO role SET ?', {name: answers.roleName, name:answers.salary, name: answers.deptName}, (err, results) => {
-            console.log('Role has been added')
-            start();
+            {
+                name: 'dept_id',
+                type: 'list',
+                message: 'Which department does this role report to?',
+                choices: departmentChoices
+            }
+        ]).then(answers => {
+            console.log(answers)
+            connection.query('INSERT INTO role SET ?', { title: answers.roleName, salary: answers.salary, dept_id: answers.dept_id }, (err, results) => {
+                console.log('Role has been added')
+                start();
+            })
         })
     })
 }
 
 // Add an employee
 const addEmployeeInfo = () => {
-   inquirer.prompt([
-        {
-            name: 'firstName',
-            type: 'input',
-            message: 'What is the employee\'s first name?'
-        },
+    connection.query('SELECT * FROM role', (err, roleResults) => {
+        const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
+        console.log(roleChoices)
+        // managerChoices.push()
 
-        {
-            name: 'lastName',
-            type: 'input',
-            message: 'What is the employee\'s last name?'
-        },
+        connection.query('SELECT * FROM employee', (err, employeeResults) => {
+            const managerChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+            managerChoices.push({ name: "none", value: null })
+            console.log(managerChoices)
+            inquirer.prompt([
+                {
+                    name: 'firstName',
+                    type: 'input',
+                    message: 'What is the employee\'s first name?'
+                },
 
-        {
-            name: 'role',
-            type: 'list',
-            message: 'What is the employee\'s role?',
-            choices: [
-                ...role
-            ]
-        },
+                {
+                    name: 'lastName',
+                    type: 'input',
+                    message: 'What is the employee\'s last name?'
+                },
 
-        {
-            name: 'manager',
-            type: 'list',
-            message: 'Who is the employee\'s manager?',
-            choices: [
-                ...managers
-            ]
-        }
-    ]).then(answers => {
-        connection.query('INSERT INTO employee SET ?', {name: answers.firstName, name: answers.lastName, name: answers.role, name: answers.manager}, (err, results) => {
-            console.log('Employee has been added')
-            start()
-        })
-    })
+                {
+                    name: 'role',
+                    type: 'list',
+                    message: 'What is the employee\'s role?',
+                    choices: roleChoices
+                },
+
+                {
+                    name: 'manager',
+                    type: 'list',
+                    message: 'Who is the employee\'s manager?',
+                    choices: managerChoices
+                }
+            ]).then(answers => {
+                connection.query('INSERT INTO employee SET ?', { first_name: answers.firstName, last_name: answers.lastName, role_id: answers.role, manager_id: answers.manager }, (err, results) => {
+                    console.log('Employee has been added')
+                    start()
+                })
+            })
+        }) // closing for employee 
+    }); //role 
 }
 
 // Update an employee's role
 const updateEmployeeInfo = () => {
-    inquirer.prompt([
-        {
-            name: 'updatename',
-            type: 'list',
-            message: 'Which employee\'s role would you like to update?',
-            choices: [
-                ...employee
-            ]
-        },
+    console.log("Hello Update");
+    connection.query('SELECT * FROM employee', (err, employeeResults) => {
+        const employeeChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+        console.log(employeeChoices)
+        console.log("Ask me a question")
+        inquirer.prompt(
+            {
+                name: 'updatename',
+                type: 'list',
+                message: 'Which employee\'s role would you like to update?',
+                choices: employeeChoices
+            }
+        ).then(answers => {
+            console.log('updating role for selected employee', answers.updatename)
+            connection.query('SELECT * FROM role', (err, roleResults) => {
+                const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
+                console.log(roleChoices)
 
-        {
-            name: 'updaterole',
-            type: 'input',
-            message: 'What is their new role?'
-        }
-    ])
+                inquirer.prompt(
+                    {
+                        name: 'newrole',
+                        type: 'list',
+                        message: 'Please select the employee\'s new role.',
+                        choices: roleChoices
+                    }
+                ).then(updatedRole => {
+                    console.log('new role for selected employee', updatedRole.newrole)
+
+                    // connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
+                    //     console.table(results)
+                    // }):
+                })
+            });// closing role connection 
+        })//closing prompt 
+    })//employee connection 
+
 }
 
 connection.connect(err => {
