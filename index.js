@@ -60,8 +60,6 @@ const start = () => {
             case 'Update an employee\'s role':
                 console.log("update")
                 updateEmployeeInfo();
-
-                start();
                 break;
 
             case 'Exit':
@@ -125,7 +123,6 @@ const addEmployeeInfo = () => {
     connection.query('SELECT * FROM role', (err, roleResults) => {
         const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
         console.log(roleChoices)
-        // managerChoices.push()
 
         connection.query('SELECT * FROM employee', (err, employeeResults) => {
             const managerChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
@@ -196,11 +193,11 @@ const updateEmployeeInfo = () => {
                     }
                 ).then(updatedRole => {
                     console.log('new role for selected employee', updatedRole.newrole)
-
-                    // connection.query('UPDATE employee SET role_id WHERE ?', (err, results) => {
-                    //     console.table(results)
-                    // }):
-                })
+                    connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole.newrole, answers.updatename], (err, results) => {
+                    console.table(results)
+                    start();
+                    });
+                });
             });// closing role connection 
         })//closing prompt 
     })//employee connection 
