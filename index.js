@@ -61,7 +61,6 @@ const start = () => {
                 break;
 
             case 'Update an employee\'s role':
-                console.log("update")
                 updateEmployeeInfo();
                 break;
 
@@ -103,7 +102,7 @@ const addDeptInfo = () => {
 const addRoleInfo = () => {
     connection.query('SELECT * FROM department', (err, deptResults) => {
         const departmentChoices = deptResults.map(({ id, name }) => ({ name: name, value: id }));
-        console.log(departmentChoices)
+        //console.log(departmentChoices)
         inquirer.prompt([
             {
                 name: 'roleName',
@@ -124,7 +123,7 @@ const addRoleInfo = () => {
                 choices: departmentChoices
             }
         ]).then(answers => {
-            console.log(answers)
+           // console.log(answers)
             connection.query('INSERT INTO role SET ?', { title: answers.roleName, salary: answers.salary, dept_id: answers.dept_id }, (err, results) => {
                 console.log('Role has been added')
                 start();
@@ -137,12 +136,12 @@ const addRoleInfo = () => {
 const addEmployeeInfo = () => {
     connection.query('SELECT * FROM role', (err, roleResults) => {
         const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
-        console.log(roleChoices)
+       // console.log(roleChoices)
 
         connection.query('SELECT * FROM employee', (err, employeeResults) => {
             const managerChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
             managerChoices.push({ name: "none", value: null })
-            console.log(managerChoices)
+            //console.log(managerChoices)
             inquirer.prompt([
                 {
                     name: 'firstName',
@@ -183,7 +182,7 @@ const addEmployeeInfo = () => {
 const updateEmployeeInfo = () => {
     connection.query('SELECT * FROM employee', (err, employeeResults) => {
         const employeeChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
-        console.log(employeeChoices)
+       // console.log(employeeChoices)
         inquirer.prompt(
             {
                 name: 'updatename',
@@ -192,7 +191,7 @@ const updateEmployeeInfo = () => {
                 choices: employeeChoices
             }
         ).then(answers => {
-            console.log('updating role for selected employee', answers.updatename)
+           // console.log('updating role for selected employee', answers.updatename)
             connection.query('SELECT * FROM role', (err, roleResults) => {
                 const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
                 console.log(roleChoices)
@@ -205,7 +204,7 @@ const updateEmployeeInfo = () => {
                         choices: roleChoices
                     }
                 ).then(updatedRole => {
-                    console.log('new role for selected employee', updatedRole.newrole)
+                   // console.log('new role for selected employee', updatedRole.newrole)
                     connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole.newrole, answers.updatename], (err, results) => {
                         console.table(results)
                         start();
@@ -221,7 +220,7 @@ const updateEmployeeInfo = () => {
 const deleteDept = () => {
     connection.query('SELECT * FROM department', (err, deptResults) => {
         const deptChoices = deptResults.map(({ id, name }) => ({ name: name, value: id }));
-        console.log(deptChoices)
+       // console.log(deptChoices)
         inquirer.prompt(
             {
                 name: 'deletedDept',
@@ -242,7 +241,7 @@ const deleteDept = () => {
 const deleteRole = () => {
     connection.query('SELECT * FROM role', (err, roleResults) => {
         const roleChoices = roleResults.map(({ id, title }) => ({ name: title, value: id }));
-        console.log(roleChoices)
+       // console.log(roleChoices)
         inquirer.prompt(
             {
                 name: 'deletedRole',
@@ -263,7 +262,7 @@ const deleteRole = () => {
 const deleteEmployee = () => {
     connection.query('SELECT * FROM employee', (err, employeeResults) => {
         const employeeChoices = employeeResults.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
-        console.log(employeeChoices)
+       // console.log(employeeChoices)
         inquirer.prompt(
             {
                 name: 'deletedEmployee',
